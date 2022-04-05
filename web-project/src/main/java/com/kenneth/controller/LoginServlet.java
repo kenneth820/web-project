@@ -2,14 +2,6 @@ package com.kenneth.controller;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.URLEncoder;
-
-import java.sql.DriverManager;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-
-import java.sql.SQLException;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -17,9 +9,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
-import util.DBManager;
+import com.kenneth.dao.MemberDAO;
 
 @WebServlet("/login.do")
 public class LoginServlet extends HttpServlet {
@@ -55,46 +46,35 @@ public class LoginServlet extends HttpServlet {
 		String pwd = request.getParameter("pwd");		
 		out.print(userid);
 		out.print(pwd);
+		
+		MemberDAO mDao = new MemberDAO();
 
 		// 포워딩 방식으로 페이지 이동
 		String url = "member/login.jsp";	
 		
-		// 데이터 베이스에서 회원 정보를 select 하여 값을 비교하고 로그인 수행
-		String sql_select_pstmt = "select pwd, name from member where userid=?";
 		
-		Connection conn = null;
-		PreparedStatement pstmt= null;
-		ResultSet rs = null;
+		int result = mDao.checkUser(userid, pwd);
 		
-		try {
-			conn = DBManager.getConnection();
-
-			// 3. 쿼리문을 실행하기 위한 객체 생성
-			pstmt = conn.prepareStatement(sql_select_pstmt);
-			pstmt.setString(1, userid);
-
-			// 4. 쿼리 실행 및 결과 처리
-			rs = pstmt.executeQuery();
+		// DB에서 이름을 가져와서 저장하는 구문 작성 - 구현 전 (다음 시간에..)
+		String name = mDao.getMember();
+		
+		
+		if (result == 1) {			
+			request.setAttribute("DB_name", name);
+			request.setAttribute("userid", userid);
 			
-			if(rs.next()) {
-//			System.out.println("pwd : " + rs.getString("pwd"));
-				if(rs.getString("pwd")!=null && rs.getString("pwd").equals(pwd)) {
-					//암호 일치
-					request.setAttribute("DB_name", rs.getString("name"));
-					request.setAttribute("userid", userid);
-					
-					url = "main.jsp";
-				} else {
-					//암호 불일치
-					// 비밀번호가 맞지 않습니다.
-					// 존재하지 않는 회원 입니다.
-				}
-			}
-		} catch(SQLException e) {
-			e.printStackTrace();
-		} finally {
-			DBManager.close(conn, pstmt, rs);
+			request.setAttribute("message", "인증이 완료되었습니다.");
+			url = "main.jsp";
+		} else if (result == 0) {
+			
+			request.setAttribute("message", "비밀번호가 맞지 않습니다.");
+		} else {
+			
+			request.setAttribute("message", "존재하지 않는 회원입니다.");
 		}
+
+		
+		
 		
 		RequestDispatcher dispatcher = request.getRequestDispatcher(url);
 		dispatcher.forward(request, response);
