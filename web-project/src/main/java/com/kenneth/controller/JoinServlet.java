@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.kenneth.dao.MemberDAO;
+import com.kenneth.dto.MemberVO;
 
 @WebServlet("/join.do")
 public class JoinServlet extends HttpServlet {
@@ -41,9 +42,19 @@ public class JoinServlet extends HttpServlet {
 		out.println(phone);
 		out.println(admin);
 		
-		MemberDAO mDao = new MemberDAO();
+		//MemberDAO mDao = new MemberDAO();
+		MemberDAO mDao = MemberDAO.getInstance();
 		
-		int result = mDao.insertMember(name, userid, pwd, email, phone, admin);		
+		MemberVO mVo = new MemberVO();
+		
+		mVo.setName(name);
+		mVo.setUserid(userid);
+		mVo.setPwd(pwd);
+		mVo.setEmail(email);
+		mVo.setPhone(phone);
+		mVo.setAdmin(Integer.parseInt(admin));		
+		
+		int result = mDao.insertMember(mVo);		
 		
 		// 회원 가입 성공 - 디비에 성공적으로 저장 완료
 		if(result == 1) {

@@ -7,8 +7,6 @@
 <title>Insert title here</title>
 </head>
 <body>
-로그아웃 jsp 파일 입니다.
-
 
 </body>
 </html>

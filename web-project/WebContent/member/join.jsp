@@ -5,11 +5,12 @@
 <head>
 <meta charset="UTF-8">
 <title>회원 가입</title>
+<script type="text/javascript" src="script/member.js"></script>
 </head>
 <body>
 <h2>회원 가입</h2>
 '*' 표시 항목은 필수 입력 항목입니다.
-<form method="post" action="join.do">
+<form method="post" action="join.do" name="frm">
 
 <table>
 	<tr>
@@ -22,13 +23,20 @@
 		<td>아이디</td>
 		<td>
 			<input type="text" name="userid">*
-			<input type="button" value="중복 체크">
+			<input type="hidden" name="checkid">
+			<input type="button" value="중복 체크" onclick="checkId()">
 		</td>
 	</tr>
 	<tr>
 		<td>비밀번호</td>
 		<td>
 			<input type="password" name="pwd">*
+		</td>
+	</tr>
+	<tr>
+		<td>비밀번호 확인</td>
+		<td>
+			<input type="password" name="pwd_check">*
 		</td>
 	</tr>
 	<tr>
@@ -47,7 +55,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td><input type="submit" value="확인"></td>
+		<td><input type="submit" value="확인" onclick="return checkJoin()"></td>
 		<td><input type="reset" value="취소">	</td>
 	</tr>
 </table>

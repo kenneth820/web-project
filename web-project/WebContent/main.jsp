@@ -17,11 +17,14 @@
 	<tr>
 		<td>안녕하세요. 
 <%-- 			<%= request.getParameter("name") %> --%> 
-<%-- 			( <%= request.getParameter("userid") %> ) --%> 
-			<%= request.getAttribute("DB_name") %> 
-			( <%= request.getAttribute("userid") %> ) 
+<%-- 			( <%= request.getParameter("userid") %> ) --%>
 
+<%-- 			<%= session.getAttribute("DB_name") %> --%> 
+<%-- 			( <%= sessioin.getAttribute("userid") %> ) --%> 
+			
+			<%= session.getAttribute("loginUser")%>			
 			회원님 반갑습니다.
+			
 		</td>
 		
 	</tr>

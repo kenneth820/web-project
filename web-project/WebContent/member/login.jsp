@@ -5,6 +5,7 @@
 <head>
 <meta charset="UTF-8">
 <title>로그인</title>
+<script type="text/javascript" src="script/member.js"></script>
 </head>
 <body>
 
@@ -26,7 +27,7 @@
 	</tr>
 	<tr>
 		<td colspan="2" align="center">
-			<input type="submit" value="로그인">
+			<input type="submit" value="로그인" onclick="return checkLogin()">
 			<input type="reset" value="취소">
 			<input type="button" value="회원가입" onclick="location.href='join.do'">
 		</td>

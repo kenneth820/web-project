@@ -9,32 +9,27 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import com.kenneth.dao.MemberDAO;
+import com.kenneth.dto.MemberVO;
 
 @WebServlet("/login.do")
 public class LoginServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// 리다이렉트 방식 - 강제 페이지 이동, URL 변경
-		// 로그인 페이지로 이동	"member/login.jsp"
-//		response.sendRedirect("member/login.jsp");
+		String url = "member/login.jsp";
+		
+		HttpSession session = request.getSession();
+		// 만약, 세션 속성이 유지되고 있는 동안(즉, 로그인 되어 있는 상태)에는 main.jsp 페이지로 이동한다.				
+		if (session.getAttribute("loginUser") != null) {
+			url = "main.jsp";
+		}
 		
 		// 포워드 방식 - URL 유지, request/response 유지
-		RequestDispatcher dispatcher = request.getRequestDispatcher("member/login.jsp");
+		RequestDispatcher dispatcher = request.getRequestDispatcher(url);
 		dispatcher.forward(request, response);
-		
-//		String name = "kenneth";
-//		int age = 12;
-//		// 속성 이름으로 속성값을 해당 객체에 저장 
-//		request.setAttribute("name", name);
-//		request.setAttribute("age", age);
-//		
-//		
-//		String name1 = (String) request.getAttribute("name");
-//		int age1 = (Integer) request.getAttribute("age");
-		
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -44,24 +39,22 @@ public class LoginServlet extends HttpServlet {
 	
 		String userid = request.getParameter("userid");
 		String pwd = request.getParameter("pwd");		
-		out.print(userid);
-		out.print(pwd);
 		
-		MemberDAO mDao = new MemberDAO();
+		//MemberDAO mDao = new MemberDAO();
+		MemberDAO mDao = MemberDAO.getInstance();		
 
 		// 포워딩 방식으로 페이지 이동
 		String url = "member/login.jsp";	
-		
-		
+
 		int result = mDao.checkUser(userid, pwd);
-		
-		// DB에서 이름을 가져와서 저장하는 구문 작성 - 구현 전 (다음 시간에..)
-		String name = mDao.getMember();
-		
-		
-		if (result == 1) {			
-			request.setAttribute("DB_name", name);
-			request.setAttribute("userid", userid);
+				
+		if (result == 1) {
+			// DB에서 회원정보(이름 포함)을 가져와서 저장하는 구문 작성
+			MemberVO mVo = mDao.getMember(userid);
+//			System.out.println(mVo.getUserid());
+			
+			HttpSession session = request.getSession();	// 세션 객체 생성
+			session.setAttribute("loginUser", mVo);		// 회원 정보를 세션에 저장
 			
 			request.setAttribute("message", "인증이 완료되었습니다.");
 			url = "main.jsp";
@@ -71,9 +64,7 @@ public class LoginServlet extends HttpServlet {
 		} else {
 			
 			request.setAttribute("message", "존재하지 않는 회원입니다.");
-		}
-
-		
+		}	
 		
 		
 		RequestDispatcher dispatcher = request.getRequestDispatcher(url);
